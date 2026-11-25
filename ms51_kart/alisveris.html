@@ -1,0 +1,381 @@
+<title>MS51 Kart Malzemeleri</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* Yerleşim: üstte özet şeridi (ilerleme), altında gruplara ayrılmış parça satırları; her satırda kaynak linkleri ve durum anahtarı */
+:root {
+  --bg: #f4f5f2;
+  --panel: #ffffff;
+  --fg: #1d2420;
+  --muted: #5f6a64;
+  --line: #dfe3de;
+  --chip: #eceee9;
+  --accent: #a8572a;          /* bakır yol rengi */
+  --accent-soft: #f3e4d9;
+  --ok: #2f7a4b;
+  --ok-soft: #dcefe2;
+  --order: #2f5f9e;
+  --order-soft: #dde7f5;
+  --warn: #9a6a12;
+  --font-sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #141816; --panel: #1c211e; --fg: #e4e8e4; --muted: #9aa49e; --line: #2e3531; --chip: #262c28;
+    --accent: #e08a55; --accent-soft: #3a2a20; --ok: #6cc28c; --ok-soft: #1f3528; --order: #7fa8e6; --order-soft: #1f2c40;
+    --warn: #e0b45c; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #141816; --panel: #1c211e; --fg: #e4e8e4; --muted: #9aa49e; --line: #2e3531; --chip: #262c28;
+  --accent: #e08a55; --accent-soft: #3a2a20; --ok: #6cc28c; --ok-soft: #1f3528; --order: #7fa8e6; --order-soft: #1f2c40;
+  --warn: #e0b45c; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg); font-family: var(--font-sans); font-size: 15px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 28px 56px;
+}
+.wrap { max-width: 1040px; margin: 0 auto; display: grid; gap: 28px; }
+a { color: inherit; }
+header { display: grid; gap: 6px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+h1 { margin: 0; font-size: clamp(24px, 4vw, 32px); font-weight: 700; letter-spacing: -.01em; text-wrap: balance; }
+.lead { margin: 0; color: var(--muted); max-width: 68ch; }
+
+.summary { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 18px 20px; display: grid; gap: 14px; }
+.stats { display: flex; flex-wrap: wrap; gap: 10px 28px; align-items: baseline; }
+.stat { display: flex; align-items: baseline; gap: 8px; }
+.stat b { font-size: 26px; font-variant-numeric: tabular-nums; font-weight: 600; }
+.stat span { color: var(--muted); font-size: 14px; }
+.stat.ok b { color: var(--ok); } .stat.order b { color: var(--order); }
+.bar { display: flex; height: 10px; border-radius: 5px; overflow: hidden; background: var(--chip); }
+.bar i { display: block; height: 100%; transition: width .3s ease; }
+.bar .b-ok { background: var(--ok); } .bar .b-order { background: var(--order); }
+.meta { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 13px; color: var(--muted); }
+.meta strong { color: var(--fg); font-weight: 600; font-variant-numeric: tabular-nums; }
+.syncnote { font-size: 13px; color: var(--warn); }
+
+.toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.toolbar .lbl { font-size: 13px; color: var(--muted); margin-right: 4px; }
+.fbtn { font: inherit; font-size: 14px; border: 1px solid var(--line); background: var(--panel); color: var(--fg); padding: 6px 12px; border-radius: 999px; cursor: pointer; }
+.fbtn[aria-pressed="true"] { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+.fbtn:focus-visible, .seg button:focus-visible, .src:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+section.group { display: grid; gap: 10px; }
+.ghead { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 16px; border-bottom: 2px solid var(--fg); padding-bottom: 6px; }
+.ghead h2 { margin: 0; font-size: 18px; font-weight: 600; }
+.ghead .gcount { font-family: var(--font-mono); font-size: 13px; color: var(--muted); }
+.gnote { margin: 0; font-size: 14px; color: var(--muted); max-width: 80ch; }
+
+.list { display: grid; }
+.item { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px 20px; padding: 14px 4px; border-bottom: 1px solid var(--line); align-items: start; }
+.item.done .name { color: var(--muted); }
+.main { min-width: 0; display: grid; gap: 6px; }
+.top { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 10px; }
+.refs { display: inline-flex; flex-wrap: wrap; gap: 4px; }
+.ref { font-family: var(--font-mono); font-size: 12px; background: var(--chip); padding: 1px 6px; border-radius: 4px; }
+.name { font-weight: 600; }
+.qty { font-family: var(--font-mono); font-size: 13px; color: var(--accent); font-weight: 500; white-space: nowrap; }
+.tag { font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--line); padding: 0 6px; border-radius: 4px; }
+.tag.opt { color: var(--accent); border-color: var(--accent); }
+.desc { margin: 0; font-size: 14px; color: var(--muted); }
+.srcs { display: flex; flex-wrap: wrap; gap: 6px; }
+.src { display: inline-flex; align-items: baseline; gap: 6px; text-decoration: none; font-size: 13px; padding: 4px 9px; border-radius: 6px; border: 1px solid var(--line); background: var(--panel); }
+.src:hover { border-color: var(--accent); }
+.src .shop { font-weight: 600; }
+.src .price { font-family: var(--font-mono); font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.src.abroad .shop::after { content: " ↗"; color: var(--muted); font-weight: 400; }
+.src.tr { background: var(--accent-soft); border-color: transparent; }
+.nosrc { font-size: 13px; color: var(--warn); }
+
+.state { display: grid; gap: 4px; justify-items: end; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--panel); }
+.seg button { font: inherit; font-size: 13px; border: 0; background: transparent; color: var(--muted); padding: 6px 11px; cursor: pointer; white-space: nowrap; }
+.seg button + button { border-left: 1px solid var(--line); }
+.seg button[aria-pressed="true"][data-s="bekliyor"] { background: var(--chip); color: var(--fg); font-weight: 600; }
+.seg button[aria-pressed="true"][data-s="siparis"] { background: var(--order-soft); color: var(--order); font-weight: 600; }
+.seg button[aria-pressed="true"][data-s="geldi"] { background: var(--ok-soft); color: var(--ok); font-weight: 600; }
+.seg button:disabled { cursor: default; }
+.when { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; min-height: 1em; }
+
+.empty { padding: 18px 4px; color: var(--muted); font-size: 14px; }
+footer { font-size: 13px; color: var(--muted); display: grid; gap: 4px; }
+
+@media (max-width: 640px) {
+  .item { grid-template-columns: minmax(0, 1fr); }
+  .state { justify-items: start; }
+}
+@media (prefers-reduced-motion: reduce) { .bar i { transition: none; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">MS51 geliştirme kartı · Rev B</div>
+    <h1>Alınacaklar ve gelenler</h1>
+    <p class="lead">Kart, programlayıcı ve kutu için gereken her şey. Sipariş verdiğinde "Sipariş", elinize ulaştığında "Geldi" seçin. Durum kaydedilir, sayfayı her açışınızda kaldığınız yerden görürsünüz.</p>
+  </header>
+
+  <div class="summary" aria-live="polite">
+    <div class="stats">
+      <div class="stat ok"><b id="n-geldi">0</b><span>geldi</span></div>
+      <div class="stat order"><b id="n-siparis">0</b><span>siparişte</span></div>
+      <div class="stat"><b id="n-bekliyor">0</b><span>bekliyor</span></div>
+      <div class="stat"><span>toplam <strong id="n-toplam">0</strong> kalem, opsiyoneller hariç</span></div>
+    </div>
+    <div class="bar" role="img" id="bar" aria-label="İlerleme"><i class="b-ok" id="bar-ok"></i><i class="b-order" id="bar-order"></i></div>
+    <div class="meta">
+      <span>Elektronik parçalar tek LCSC sepetinde ≈ <strong id="lcsc-sepet">–</strong></span>
+      <span>Kart başına malzeme ≈ <strong id="lcsc-kart">–</strong></span>
+      <span>LCSC fiyatları 17 Kasım 2026, TL fiyatları 15–17 Kasım 2026</span>
+    </div>
+    <div class="syncnote" id="syncnote" hidden></div>
+  </div>
+
+  <div class="toolbar" role="group" aria-label="Filtre">
+    <span class="lbl">Göster:</span>
+    <button class="fbtn" id="f-hepsi" data-f="hepsi" aria-pressed="true">Hepsi</button>
+    <button class="fbtn" id="f-eksik" data-f="eksik" aria-pressed="false">Eksikler</button>
+    <button class="fbtn" id="f-geldi" data-f="geldi" aria-pressed="false">Gelenler</button>
+  </div>
+
+  <div id="groups"></div>
+
+  <footer>
+    <span>Linkler ve stoklar sık değişir; sipariş vermeden önce sayfayı açıp stok ve fiyatı kontrol edin. Turuncu zeminli linkler Türkiye'deki mağazalar.</span>
+    <span>LCSC'de "min" en az alım adedidir; artan pasifler sonraki kartlara yeter. Ayrıntılar: <code>donanim/tedarik.md</code>, <code>ms51_kart/BENIOKU.md</code>.</span>
+  </footer>
+</div>
+
+<script>
+const LCSC = (c) => `https://www.lcsc.com/product-detail/${c}.html`;
+const lc = (c, unit, min) => ({ shop: 'LCSC', url: LCSC(c), price: `${c} · ${unit.toFixed(unit < 0.1 ? 4 : 2)} $${min > 1 ? ` · min ${min}` : ''}`, abroad: true, unit, min });
+const tr = (shop, url, price) => ({ shop, url, price, tr: true });
+
+const GRUPLAR = [
+  { id: 'kart', ad: 'Kart üretimi',
+    not: 'Gerber dosyası ms51_kart/uretim/ms51_kart-gerber.zip. JLCPCB dizgisini (SMT montaj) seçerseniz "SMD" etiketli parçalar karta lehimli gelir; bu durumda onları ayrıca almanız gerekmez, gelen kartla birlikte "Geldi" işaretleyin.' },
+  { id: 'parca', ad: 'Elektronik parçalar',
+    not: 'En kolayı hepsini tek LCSC siparişiyle almak. CH340C Türkiye\'de yok; Rev B kartta yerine Özdisan\'da stokta olan CH340G takılabilir, o zaman kristal ve iki 22 pF kondansatör de alınır (opsiyonel satırlar). HRO USB-C soket de Türkiye\'de yok (yerlilerin lehim ayağı farklı).' },
+  { id: 'prog', ad: 'Programlama',
+    not: 'MS51 fabrikadan bootloader\'sız gelir. Nu-Link ile her çipe bir kez bootloader yüklenir; sonrası USB üzerinden. Bir laboratuvara bir Nu-Link yeter.' },
+  { id: 'kutu', ad: 'Kutu',
+    not: 'Kutu parçaları 3D yazıcıda basılır (ms51_kart/kutu/). Satın alınacaklar yalnızca vida ve isteğe bağlı lastik ayak.' },
+];
+
+const KALEMLER = [
+  { id: 'pcb', g: 'kart', refs: [], ad: 'PCB, 5 adet', adet: '5 adet', aciklama: '84 × 50 mm, 2 katman, FR-4 1.6 mm, HASL. Varsayılan seçenekler uygun. ≈ 2–5 $',
+    src: [{ shop: 'JLCPCB', url: 'https://jlcpcb.com/', price: 'Gerber zip yükle', abroad: true }] },
+  { id: 'dizgi', g: 'kart', refs: [], ad: 'Dizgi (SMT montaj)', adet: 'isteğe bağlı', opt: true, aciklama: 'LQFP-32 kılıflı MCU 0.8 mm adımlı; havyayla zor. jlcpcb-bom.csv ve jlcpcb-cpl.csv yüklenir, U1 1. pin yönü önizlemede kontrol edilir.',
+    src: [{ shop: 'JLCPCB PCB Assembly', url: 'https://jlcpcb.com/', price: 'PCB siparişinde seçilir', abroad: true }] },
+
+  { id: 'u1', g: 'parca', refs: ['U1'], ad: 'MS51PC0AE', adet: '1', smd: true, aciklama: 'Nuvoton 1T 8051, 32K flash, LQFP-32. Kart başına maliyetin yarısı.',
+    src: [lc('C2688383', 1.3347, 1), tr('Özdisan', 'https://www.ozdisan.com/p/mikroislemciler-218/nuvoton-ms51pc0ae-tr-652409', '40.05 TL + KDV')] },
+  { id: 'u2', g: 'parca', refs: ['U2'], ad: 'CH340C ya da CH340G', adet: '1', smd: true, aciklama: 'USB-UART köprü, SOP-16. CH340C kristalsiz çalışır (LCSC). CH340G Türkiye\'de stokta; seçerseniz aşağıdaki kristal ve 22 pF kondansatörleri de alın.',
+    src: [lc('C84681', 0.5506, 1), tr('Özdisan · CH340G', 'https://www.ozdisan.com/en/p/controllers-227/wch-ch340g-469466', '≈ 27 TL + KDV · stok 8 102')] },
+  { id: 'y1', g: 'parca', refs: ['Y1'], ad: '12 MHz kristal, HC-49S', adet: '1', opt: true, aciklama: 'Yalnızca CH340G seçilirse. Delikli, elle lehimlenir.',
+    src: [lc('C16369', 0.1042, 5), tr('motorobit araması', 'https://www.motorobit.com/arama?q=12+mhz+kristal', ''), tr('direnc.net araması', 'https://www.direnc.net/arama?q=12+mhz+kristal', '')] },
+  { id: 'c22p', g: 'parca', refs: ['C8', 'C9'], ad: '22 pF kondansatör', adet: '2', opt: true, smd: true, aciklama: '0603, C0G. Yalnızca CH340G seçilirse; JLCPCB dizgisine dahil değil, elle lehimlenir.',
+    src: [lc('C1653', 0.009, 50), tr('direnc.net araması', 'https://www.direnc.net/arama?q=22pf+0603', '')] },
+  { id: 'u3', g: 'parca', refs: ['U3'], ad: 'USBLC6-2SC6 ya da muadili', adet: '1', smd: true, aciklama: 'USB ESD koruma, SOT-23-6. Türkiye\'de stokta olan bacak uyumlu muadiller: Semtech SRV05-4 ve TI TPD4E001DBVR; kart değişmeden takılır. TPD4E001RDBVR (sonunda R olan) uymaz, onda GND ve VCC yer değiştirmiş.',
+    src: [lc('C7519', 0.1585, 5), tr('Özdisan · SRV05-4', 'https://www.ozdisan.com/p/tvs-diyotlar-386/semtech-srv05-4-tct-609942', '8.22 TL + KDV · stok 976'), tr('Özdisan · TPD4E001DBVR', 'https://www.ozdisan.com/p/tvs-diyotlar-386/texas-tpd4e001dbvr-383414', '6.98 TL + KDV · stok 1 728'), tr('Özdisan · USBLC6-2SC6', 'https://www.ozdisan.com/p/tvs-diyotlar-386/stm-usblc6-2sc6-402751', 'stok 0, gelecek stok var')] },
+  { id: 'j1', g: 'parca', refs: ['J1'], ad: 'USB-C soket, HRO TYPE-C-31-M-12', adet: '1', smd: true, aciklama: '16 pin, yüzey montaj. JLCPCB dizgisi seçilirse karta lehimli gelir. 17 Kasım\'da Türkiye\'de stokta 16 pinli SMD USB-C soket yoktu (Özdisan\'daki 15 model stok 0; direnc.net, motorobit, Robotistan satmıyor).',
+    src: [lc('C165948', 0.1888, 5), { shop: 'AliExpress araması', url: 'https://www.aliexpress.com/w/wholesale-TYPE-C-31-M-12.html', price: 'genelde 10\'lu paket', abroad: true }], yok: 'Türkiye\'de stokta yok' },
+  { id: 'f1', g: 'parca', refs: ['F1'], ad: 'PTC sigorta 500 mA', adet: '1', smd: true, aciklama: '1206 kılıf.',
+    src: [lc('C70075', 0.0414, 20), tr('direnc.net', 'https://www.direnc.net/500ma-24v-smt-ptc-sigorta-1206', '7.17 TL'), tr('Özdisan', 'https://www.ozdisan.com/en/p/ptc-resettable-fuses-845/fuzetec-fsmd050-24-1206r-537038', '5.36 TL')] },
+  { id: 'd1', g: 'parca', refs: ['D1'], ad: 'B5819W Schottky diyot', adet: '1', smd: true, aciklama: 'SOD-123. Otomatik reset darbesinde RST\'yi kırpar.',
+    src: [lc('C8598', 0.0258, 20), tr('motorobit', 'https://www.motorobit.com/b5819w-1a-40v-smd-schottky-diyot', '1.03 TL + KDV'), tr('direnc.net', 'https://www.direnc.net/b5819w-1a-40v-silicon-signal-diode', '2.42 TL')] },
+  { id: 'c100n', g: 'parca', refs: ['C2', 'C3', 'C4', 'C5', 'C7'], ad: '100 nF kondansatör', adet: '5', smd: true, aciklama: '0603, X7R.',
+    src: [lc('C14663', 0.0058, 100), tr('direnc.net', 'https://www.direnc.net/100nf-50v-603-smd-kondansator', 'en az 10 · 0.26 TL/adet'), tr('Özdisan', 'https://www.ozdisan.com/en/p/smt-smd-and-mlcc-capacitors-184/yageo-cc0603krx7r9bb104-476015', 'BOM\'daki parça')] },
+  { id: 'c10u', g: 'parca', refs: ['C1', 'C6'], ad: '10 µF kondansatör', adet: '2', smd: true, aciklama: '0805.',
+    src: [lc('C15850', 0.0314, 20), tr('direnc.net', 'https://www.direnc.net/47uf-50v-10-x5r-805-smd-kondansator', '0.86 TL (sayfadaki ürün 10 µF)'), tr('Özdisan', 'https://www.ozdisan.com/en/p/smt-smd-and-mlcc-capacitors-184/samsung-cl21a106kaynnne-453566', 'BOM\'daki parça')] },
+  { id: 'r51k', g: 'parca', refs: ['R1', 'R2'], ad: '5.1 kΩ direnç', adet: '2', smd: true, aciklama: '0603. USB-C CC hatları; %5 yeterli.',
+    src: [lc('C23186', 0.0016, 100), tr('Özdisan', 'https://www.ozdisan.com/en/p/smt-smd-and-chip-resistors-194/royalohm-0603saj0512t5e-346979', 'MOQ 200 · 10.82 TL')] },
+  { id: 'r10k', g: 'parca', refs: ['R6'], ad: '10 kΩ direnç', adet: '1', smd: true, aciklama: '0603. RST pull-up.',
+    src: [lc('C25804', 0.002, 100), tr('Özdisan', 'https://www.ozdisan.com/en/p/smt-smd-and-chip-resistors-194/royalohm-0603saf1002tde-516106', '100\'lük · 9.17 TL'), tr('direnc.net', 'https://www.direnc.net/10k-5-110w-s-603-smd-direnc-5000-adet', 'en az 100')] },
+  { id: 'r1k', g: 'parca', refs: ['R3', 'R4', 'R5', 'R7', 'R8'], ad: '1 kΩ direnç', adet: '5', smd: true, aciklama: '0603. LED akımı, UART seri, reset seri. LCSC\'de 17 Kasım\'da stok yoktu; herhangi bir 0603 1k olur.',
+    src: [lc('C21190', 0.0017, 100), tr('Özdisan', 'https://www.ozdisan.com/en/p/smt-smd-and-chip-resistors-194/royalohm-0603saf1001t5e-341789', '100\'lük paket')] },
+  { id: 'led1', g: 'parca', refs: ['LED1'], ad: 'Yeşil LED (PWR)', adet: '1', smd: true, aciklama: '0603. LCSC\'de stok yoktu; herhangi bir 0603 yeşil LED olur.',
+    src: [lc('C72043', 0.024, 50), tr('direnc.net', 'https://www.direnc.net/603-kilif-smd-yesil-led-500mcd-honglitronic', '1.38 TL'), tr('Özdisan', 'https://www.ozdisan.com/en/p/led-signal-color-361/honglitronic-hl-pst-1608u51gc-471660', 'MOQ 20')] },
+  { id: 'led2', g: 'parca', refs: ['LED2'], ad: 'Kırmızı LED (L)', adet: '1', smd: true, aciklama: '0603. P1.2 kullanıcı LED\'i.',
+    src: [lc('C2286', 0.0077, 100), tr('direnc.net', 'https://www.direnc.net/603-kilif-smd-kirmizi-led-90mcd-honglitronic', '1.38 TL'), tr('Özdisan', 'https://www.ozdisan.com/en/p/led-signal-color-361/liteon-ltst-c190krkt-456428', 'MOQ 20')] },
+  { id: 'sw', g: 'parca', refs: ['SW1', 'SW2'], ad: 'SMD tact buton 5.1 × 5.1 mm', adet: '2', smd: true, aciklama: 'RESET ve USER. Yerli muadillerin pad aralığını datasheet\'ten kontrol edin.',
+    src: [lc('C318884', 0.0216, 20), tr('motorobit', 'https://www.motorobit.com/4-pinli-5x5x15mm-smd-tact-buton', '2.06 TL + KDV'), tr('Özdisan', 'https://www.ozdisan.com/en/p/tactile-switches-485/kls-electronic-l-kls7-tk-052v-1-5-160-595732', '6.24 TL')] },
+  { id: 'hdr', g: 'parca', refs: ['J2', 'J3', 'J4', 'J5', 'J6'], ad: 'Erkek pin header 1 × 40, 2.54 mm', adet: '2', aciklama: 'Kesilerek 3 × 10, 1 × 8 ve 1 × 5 pin. Elle lehimlenir (dizgiye dahil değil).',
+    src: [lc('C2337', 0.1632, 5), tr('motorobit', 'https://www.motorobit.com/1x40-erkek-header-40-pin-254mm-180-derece', '3.09 TL + KDV'), tr('Özdisan', 'https://www.ozdisan.com/en/p/pin-headers-293/connfly-ds1021-1x40sf11-b-346538', '6.54 TL')] },
+
+  { id: 'nulink', g: 'prog', refs: [], ad: 'Nu-Link programlayıcı', adet: '1', aciklama: 'Bootloader\'ı ICP header\'ından (J6) yüklemek için. Windows\'ta NuMicro ICP Programming Tool ile kullanılır.',
+    src: [tr('Özdisan', 'https://www.ozdisan.com/p/islemci-programlayicilari-610/nuvoton-nu-link-531781', '1 545 TL + KDV'), tr('motorobit (uyumlu)', 'https://www.motorobit.com/nu-link-plus-icp-programlayici-nuvoton-uyumlu', '1 669 TL KDV dahil')] },
+  { id: 'jumper', g: 'prog', refs: [], ad: 'Dişi-dişi jumper kablo', adet: '5 tel', opt: true, aciklama: 'Nu-Link\'in kablo ucu J6\'nın sırasına (5V, DAT, CLK, RST, GND) uymazsa teker teker bağlamak için.',
+    src: [tr('motorobit araması', 'https://www.motorobit.com/arama?q=disi+disi+jumper', '5 pinlik ve 40 pinlik var')] },
+
+  { id: 'vida', g: 'kutu', refs: [], ad: 'M3 × 16 imbus vida (DIN 912)', adet: '4', aciklama: 'Kapağı, kartı ve alt tablayı birlikte sıkıştırır. Sık sökülecekse 4 adet M3 sıcak gömme somun da alın.',
+    src: [tr('Trendyol araması', 'https://www.trendyol.com/sr?q=m3x16%20imbus%20civata', 'hırdavat'), tr('direnc.net araması', 'https://www.direnc.net/arama?q=m3x16', '')] },
+  { id: 'ayak', g: 'kutu', refs: [], ad: 'Yapışkanlı lastik ayak, 10 mm', adet: '4', opt: true, aciklama: 'Tabanda 0.6 mm derinliğinde yuvaları var.',
+    src: [tr('Trendyol araması', 'https://www.trendyol.com/sr?q=10mm%20yapiskanli%20lastik%20ayak', '')] },
+  { id: 'filament', g: 'kutu', refs: [], ad: 'Şeffaf PETG veya PLA', adet: 'az miktar', opt: true, aciklama: 'Yalnızca iki ışık borusu için. Elinizde yoksa borular basılmadan da LED\'ler görünür, sönük kalır.',
+    src: [{ shop: 'Bambu Lab Store', url: 'https://eu.store.bambulab.com/', price: 'PETG Translucent', abroad: true }] },
+];
+
+const DURUMLAR = [['bekliyor', 'Bekliyor'], ['siparis', 'Sipariş'], ['geldi', 'Geldi']];
+const durum = {};          // id -> {durum, zaman}
+let filtre = 'hepsi';
+let db = null, yazabilir = true, yerel = false;
+const bekleyenYazma = new Set();
+
+try { const f = localStorage.getItem('ms51-filtre'); if (f) filtre = f; } catch (e) {}
+
+function esc(s) { return String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+function tarih(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  return isNaN(d) ? '' : d.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' });
+}
+function d(id) { return (durum[id] && durum[id].durum) || 'bekliyor'; }
+
+function ozet() {
+  const zorunlu = KALEMLER.filter((k) => !k.opt);
+  const say = { bekliyor: 0, siparis: 0, geldi: 0 };
+  zorunlu.forEach((k) => say[d(k.id)]++);
+  for (const s in say) document.getElementById('n-' + s).textContent = say[s];
+  document.getElementById('n-toplam').textContent = zorunlu.length;
+  document.getElementById('bar-ok').style.width = (100 * say.geldi / zorunlu.length) + '%';
+  document.getElementById('bar-order').style.width = (100 * say.siparis / zorunlu.length) + '%';
+  document.getElementById('bar').setAttribute('aria-label', `${say.geldi} / ${zorunlu.length} geldi, ${say.siparis} siparişte`);
+  let sepet = 0, kart = 0;
+  KALEMLER.forEach((k) => {
+    const l = k.src.find((s) => s.unit);
+    if (!l || k.opt) return;
+    const n = parseInt(k.adet, 10);
+    kart += l.unit * n; sepet += l.unit * Math.max(n, l.min);
+  });
+  document.getElementById('lcsc-sepet').textContent = sepet.toFixed(2) + ' $';
+  document.getElementById('lcsc-kart').textContent = kart.toFixed(2) + ' $';
+}
+
+function satir(k) {
+  const s = d(k.id);
+  const refs = k.refs.length ? `<span class="refs">${k.refs.map((r) => `<span class="ref">${esc(r)}</span>`).join('')}</span>` : '';
+  const tags = (k.smd ? '<span class="tag">SMD</span>' : '') + (k.opt ? '<span class="tag opt">opsiyonel</span>' : '');
+  const srcs = k.src.map((x) => `<a class="src${x.tr ? ' tr' : ''}${x.abroad ? ' abroad' : ''}" href="${esc(x.url)}" target="_blank" rel="noopener"><span class="shop">${esc(x.shop)}</span>${x.price ? `<span class="price">${esc(x.price)}</span>` : ''}</a>`).join('');
+  const yok = k.yok ? `<span class="nosrc">${esc(k.yok)}</span>` : '';
+  const kilitli = !yazabilir || bekleyenYazma.has(k.id);
+  const seg = DURUMLAR.map(([v, ad]) => `<button type="button" id="b-${k.id}-${v}" data-id="${k.id}" data-s="${v}" aria-pressed="${s === v}"${kilitli ? ' disabled' : ''}>${ad}</button>`).join('');
+  const z = durum[k.id] && durum[k.id].zaman;
+  const when = s === 'geldi' && z ? `Geldi: ${tarih(z)}` : s === 'siparis' && z ? `Sipariş: ${tarih(z)}` : '';
+  return `<div class="item${s === 'geldi' ? ' done' : ''}">
+    <div class="main">
+      <div class="top">${refs}<span class="name">${esc(k.ad)}</span><span class="qty">× ${esc(k.adet)}</span>${tags}</div>
+      <p class="desc">${esc(k.aciklama)}</p>
+      <div class="srcs">${srcs}${yok}</div>
+    </div>
+    <div class="state">
+      <div class="seg" role="group" aria-label="${esc(k.ad)} durumu">${seg}</div>
+      <span class="when">${esc(when)}</span>
+    </div>
+  </div>`;
+}
+
+function ciz() {
+  const odak = document.activeElement && document.activeElement.id;
+  requestAnimationFrame(() => { const el = odak && document.getElementById(odak); if (el && el !== document.activeElement) el.focus(); });
+  document.querySelectorAll('.fbtn').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.f === filtre)));
+  const html = GRUPLAR.map((g) => {
+    const hepsi = KALEMLER.filter((k) => k.g === g.id);
+    const gorunen = hepsi.filter((k) => filtre === 'hepsi' || (filtre === 'geldi' ? d(k.id) === 'geldi' : d(k.id) !== 'geldi'));
+    const gelen = hepsi.filter((k) => d(k.id) === 'geldi').length;
+    return `<section class="group">
+      <div class="ghead"><h2>${esc(g.ad)}</h2><span class="gcount">${gelen} / ${hepsi.length} geldi</span></div>
+      <p class="gnote">${esc(g.not)}</p>
+      <div class="list">${gorunen.length ? gorunen.map(satir).join('') : `<div class="empty">${filtre === 'geldi' ? 'Bu gruptan henüz gelen yok.' : 'Bu gruptakilerin hepsi geldi.'}</div>`}</div>
+    </section>`;
+  }).join('');
+  document.getElementById('groups').innerHTML = html;
+  ozet();
+}
+
+function not(metin) {
+  const n = document.getElementById('syncnote');
+  n.textContent = metin || '';
+  n.hidden = !metin;
+}
+
+async function degistir(id, yeni) {
+  if (d(id) === yeni || bekleyenYazma.has(id)) return;
+  const eski = durum[id];
+  const kayit = { durum: yeni, zaman: new Date().toISOString() };
+  durum[id] = kayit;
+  if (yerel) {
+    try { localStorage.setItem('ms51-durum', JSON.stringify(durum)); } catch (e) {}
+    ciz();
+    return;
+  }
+  bekleyenYazma.add(id);
+  ciz();
+  try {
+    await db.collection('durum').doc(id).set(kayit);
+  } catch (e) {
+    durum[id] = eski;
+    if (e && e.code === 'invalid_argument') {
+      yazabilir = false;
+      not('Bu sayfada değişiklik yapma izniniz yok; durumları yalnızca görüntüleyebilirsiniz.');
+    } else if (e && e.code === 'unavailable') {
+      not('Kaydedilemedi, bağlantı geçici olarak yok. Biraz sonra tekrar deneyin.');
+    } else {
+      not('Kaydedilemedi. Sayfayı yenileyip tekrar deneyin.');
+    }
+  } finally {
+    bekleyenYazma.delete(id);
+    ciz();
+  }
+}
+
+document.addEventListener('click', (e) => {
+  const b = e.target.closest('.seg button');
+  if (b && !b.disabled) { degistir(b.dataset.id, b.dataset.s); return; }
+  const f = e.target.closest('.fbtn');
+  if (f) {
+    filtre = f.dataset.f;
+    try { localStorage.setItem('ms51-filtre', filtre); } catch (err) {}
+    ciz();
+  }
+});
+
+function yereleGec(sebep) {
+  yerel = true;
+  try { Object.assign(durum, JSON.parse(localStorage.getItem('ms51-durum') || '{}')); } catch (e) {}
+  not(sebep);
+  ciz();
+}
+
+ciz();
+
+(async () => {
+  const c = window.claude;
+  if (!c || !c.use) { yereleGec('Bu görünümde ortak kayıt yok; seçimler yalnızca bu tarayıcıda saklanıyor.'); return; }
+  const [dbNs, user] = await Promise.all([c.use('db'), c.use('user')]);
+  if (!dbNs) { yereleGec('Ortak kayda bağlanılamadı; seçimler yalnızca bu tarayıcıda saklanıyor.'); return; }
+  db = dbNs;
+  if (user) {
+    const izin = await user.can('data.write');
+    if (izin === false) { yazabilir = false; not('Bu sayfayı yalnızca görüntüleyebilirsiniz.'); }
+  }
+  let yuklendi = false;
+  const zamanlayici = setTimeout(() => { if (!yuklendi) not('Kayıtlı durumlara henüz ulaşılamadı; gösterilenler eski olabilir.'); }, 10000);
+  db.collection('durum').onSnapshot((snap) => {
+    snap.docs.forEach((doc) => { if (!bekleyenYazma.has(doc.id)) durum[doc.id] = doc.data(); });
+    snap.docChanges().forEach((ch) => { if (ch.type === 'removed' && !bekleyenYazma.has(ch.doc.id)) delete durum[ch.doc.id]; });
+    if (!snap.metadata.fromCache && !yuklendi) { yuklendi = true; clearTimeout(zamanlayici); if (yazabilir) not(''); }
+    ciz();
+  }, (err) => {
+    clearTimeout(zamanlayici);
+    yuklendi = true;
+    if (err.code === 'revoked') { yazabilir = false; not('Bu sayfaya erişim değişti; durumlar güncellenmiyor.'); }
+    else not('Kayıtlı durumlar yüklenemedi. Sayfayı yenileyin.');
+    ciz();
+  });
+})();
+</script>

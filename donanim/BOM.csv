@@ -1,0 +1,25 @@
+Comment,Designator,Footprint,LCSC Part #,Qty,Manufacturer Part,Aciklama
+STC12C5A60S2-35I,U1,PDIP-40 (600mil),C14550,1,STC12C5A60S2-35I-PDIP40,"1T 8051 MCU, 60K flash, 1.25K RAM, 10-bit 8 kanal ADC, 2 kanal PWM (PCA), 2 UART, dahili ROM seri bootloader"
+DIP-40 soket,XU1,DIP-40 (600mil) THT,C72123,1,DS1009-40AT1WX-0A2,U1 icin soket (cip degistirilebilir)
+CH340C,U2,SOP-16,C84681,1,CH340C,"USB-UART kopru, dahili osilator (kristal gerekmez)"
+USBLC6-2SC6,U3,SOT-23-6,C7519,1,USBLC6-2SC6,USB D+/D- ESD koruma
+TYPE-C-31-M-12,J1,USB-C 16P SMD,C165948,1,TYPE-C-31-M-12,USB-C konnektor (guc + veri)
+nSMD050-16V,F1,1206,C70075,1,nSMD050-16V,"PTC sigorta, 500mA tutma"
+AO3401A,Q1,SOT-23,C15127,1,AO3401A,P-MOSFET: VCC_MCU guc anahtari (otomatik ISP icin)
+2N7002,Q2,SOT-23,C8545,1,2N7002,N-MOSFET: Q1 kapi surucusu
+MMBT3904,Q3,SOT-23,C20526,1,MMBT3904,NPN: DTR/RTS kombinasyon algilayici
+B5819W,D1,SOD-123,C8598,1,B5819W SL,"Schottky: CH340 TX -> MCU RXD, kapaliyken geri beslemeyi engeller"
+11.0592MHz,Y1,HC-49S THT,C2203,1,X49SD110592MSD2SC,"Kristal, 20pF yuk"
+33pF,"C7,C8",0603,C1663,2,CL10C330JB8NNNC,Kristal yuk kondansatorleri
+100nF,"C2,C3,C4,C5",0603,C14663,4,CC0603KRX7R9BB104,Dekuplaj
+10uF,"C1,C6,C9",0805,C15850,3,CL21A106KAYNNNE,"Bulk dekuplaj (C1, C6), reset RC (C9)"
+5.1k,"R1,R2",0603,C23186,2,0603WAF5101T5E,USB-C CC1/CC2 pull-down (5V talebi)
+10k,"R6,R7,R8,R11",0603,C25804,4,0603WAF1002T5E,"Q1 kapi pull-up, ISP_N pull-up, Q3 baz, RST pull-down"
+4.7k,"R4,R9",0603,C23162,2,0603WAF4701T5E,"MCU RXD pull-up (R4), VCC_MCU desarj (R9)"
+1k,"R3,R5,R10,R12,R13",0603,C21190,5,0603WAF1001T5E,"LED akim (R3,R10,R13), TXD seri (R5), reset butonu (R12)"
+10k x8 SIP-9,RN1,SIP-9 2.54mm THT,C8692,1,A09-103JP,"P0 pull-up dizisi (ortak uc pin 1, VCC_MCU)"
+LED yesil,LED1,0603,C72043,1,19-217/GHC-YR1S2/3T,PWR (+5V USB)
+LED sari,LED2,0603,C72038,1,19-213/Y2C-CQ2R2L/3T(CY),MCU (VCC_MCU acik)
+LED kirmizi,LED3,0603,C2286,1,KT-0603R,"L: kullanici LED'i, P1.7 (aktif dusuk)"
+Buton,"SW1,SW2,SW3",SMD 5.1x5.1mm,C318884,3,TS-1187A-B-A-B,"SW1=ISP (MCU gucunu keser), SW2=RESET, SW3=USER (P3.2/INT0)"
+Pin header 1x40,"J2,J3,J4,J5,J6",2.54mm THT,C2337,2,2.54-1*40P,"Kesilerek: 4x 1x10 (P0..P3) + 1x3 (RST/P4.5/P4.4)"

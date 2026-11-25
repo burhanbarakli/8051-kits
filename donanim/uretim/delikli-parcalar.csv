@@ -1,0 +1,6 @@
+Comment,Designator,LCSC Part #,Adet,Aciklama
+STC12C5A60S2-35I,U1,C14550,1,"1T 8051 MCU, 60K flash, 1.25K RAM, 10-bit 8 kanal ADC, 2 kanal PWM (PCA), 2 UART, dahili ROM seri bootloader"
+DIP-40 soket,XU1,C72123,1,U1 icin soket (cip degistirilebilir)
+11.0592MHz,Y1,C2203,1,"Kristal, 20pF yuk"
+10k x8 SIP-9,RN1,C8692,1,"P0 pull-up dizisi (ortak uc pin 1, VCC_MCU)"
+Pin header 1x40,"J2,J3,J4,J5,J6",C2337,2,Kesilerek: 4x 1x10 (P0..P3) + 1x3 (RST/P4.5/P4.4)

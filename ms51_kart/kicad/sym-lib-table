@@ -1,0 +1,4 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "MS51")(type "KiCad")(uri "${KIPRJMOD}/ms51.kicad_sym")(options "")(descr "Nuvoton MS51"))
+)

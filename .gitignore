@@ -1,0 +1,35 @@
+# macOS
+.DS_Store
+
+# Claude Code yerel ayarları
+.claude/
+
+# KiCad: kişisel görünüm ayarları, yedekler, kilit ve önbellek dosyaları
+*.kicad_prl
+*-backups/
+*.lck
+fp-info-cache
+*-bak
+*.bak
+\#auto_saved_files#
+_autosave-*
+logs/
+
+# Python
+__pycache__/
+*.pyc
+
+# SDCC ara dosyaları (ms51_isp.ihx ve ms51_isp.bin depoda kalır)
+*.rel
+*.lst
+*.sym
+*.rst
+*.asm
+*.map
+*.mem
+*.lk
+*.cdb
+*.adb
+
+# Bilgisayarda derlenen test programı (make host ile yeniden üretilir)
+ms51_kart/bootloader/isp_host

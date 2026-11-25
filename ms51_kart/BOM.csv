@@ -1,0 +1,18 @@
+Comment,Designator,Footprint,LCSC Part #,Qty,Manufacturer Part,Aciklama
+MS51PC0AE,U1,LQFP-32 7x7mm,C2688383,1,MS51PC0AE,"Nuvoton 1T 8051, 32K flash, 2K XRAM, 12-bit ADC, PWM, dahili 16/24 MHz osilator; bootloader ICP ile yuklenir"
+CH340C,U2,SOP-16,C84681,1,CH340C,"USB-UART kopru, dahili osilator (kristal gerekmez). Yerine CH340G takilabilir: o zaman Y1, C8, C9 da takilir"
+USBLC6-2SC6,U3,SOT-23-6,C7519,1,USBLC6-2SC6,USB D+/D- ESD koruma
+TYPE-C-31-M-12,J1,USB-C 16P SMD,C165948,1,TYPE-C-31-M-12,USB-C konnektor (guc + veri)
+nSMD050-16V,F1,1206,C70075,1,nSMD050-16V,"PTC sigorta, 500mA tutma"
+B5819W,D1,SOD-123,C8598,1,B5819W SL,"Schottky: otomatik reset darbesinde RST'yi +5V'ta kirpar"
+100nF,"C2,C3,C4,C5,C7",0603,C14663,5,CC0603KRX7R9BB104,"Dekuplaj (C2,C3,C5), CH340 V3 (C4), DTR otomatik reset (C7)"
+10uF,"C1,C6",0805,C15850,2,CL21A106KAYNNNE,Bulk dekuplaj
+5.1k,"R1,R2",0603,C23186,2,0603WAF5101T5E,USB-C CC1/CC2 pull-down (5V talebi)
+10k,R6,0603,C25804,1,0603WAF1002T5E,RST pull-up
+1k,"R3,R4,R5,R7,R8",0603,C21190,5,0603WAF1001T5E,"LED akim (R3,R8), UART seri (R4,R5), otomatik reset seri (R7)"
+LED yesil,LED1,0603,C72043,1,19-217/GHC-YR1S2/3T,PWR (+5V)
+LED kirmizi,LED2,0603,C2286,1,KT-0603R,"L: kullanici LED'i, P1.2 / PWM0_CH0 (aktif dusuk)"
+Buton,"SW1,SW2",SMD 5.1x5.1mm,C318884,2,TS-1187A-B-A-B,"SW1=RESET, SW2=USER (P3.0/INT0)"
+Pin header 1x40,"J2,J3,J4,J5,J6",2.54mm THT,C2337,2,2.54-1*40P,"Kesilerek: 3x 1x10 (P0, P1, P3) + 1x8 (P2) + 1x5 (ICP)"
+12MHz,Y1,HC-49S THT,C16369,1,X49SD12MSD2SC,"TAKILMAZ: yalnizca U2 yerine CH340G takilirsa (12 MHz kristal, 20pF yuk)"
+22pF,"C8,C9",0603,C1653,2,CL10C220JB8NNNC,"TAKILMAZ: yalnizca CH340G ile, kristal yuk kondansatorleri"

@@ -1,0 +1,3 @@
+Comment,Designator,LCSC Part #,Adet,Aciklama
+12MHz,Y1,C16369,1,"TAKILMAZ: yalnizca U2 yerine CH340G takilirsa (12 MHz kristal, 20pF yuk)"
+22pF,"C8,C9",C1653,2,"TAKILMAZ: yalnizca CH340G ile, kristal yuk kondansatorleri"

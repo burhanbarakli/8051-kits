@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>8051 Yükleyici</title>
+<style>
+  :root {
+    --bg: #f6f7f9; --panel: #fff; --text: #16181d; --muted: #5d6470; --line: #dde1e7;
+    --accent: #1f6feb; --accent-text: #fff; --ok: #1a7f37; --err: #cf222e; --log: #0f1115; --log-text: #d6dae0;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #0f1115; --panel: #171a21; --text: #e6e8ec; --muted: #9aa3b0; --line: #2a2f39;
+      --accent: #4c8dff; --ok: #3fb950; --err: #ff6b6b; --log: #0b0d11; }
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body { margin: 0; padding: 24px 16px; background: var(--bg); color: var(--text);
+    font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 720px; margin: 0 auto; display: grid; gap: 16px; }
+  h1 { font-size: 22px; margin: 0; }
+  .sub { color: var(--muted); margin: 2px 0 0; }
+  section { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 16px; }
+  .drop { border: 2px dashed var(--line); border-radius: 8px; padding: 20px; text-align: center; cursor: pointer; }
+  .drop.over { border-color: var(--accent); }
+  .drop strong { display: block; }
+  .file { color: var(--muted); margin-top: 6px; font-size: 14px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 14px; }
+  label { display: grid; gap: 4px; font-size: 14px; color: var(--muted); }
+  label.check { display: flex; align-items: center; gap: 8px; color: var(--text); }
+  select { font: inherit; padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px;
+    background: var(--panel); color: var(--text); }
+  button { font: inherit; font-weight: 600; padding: 10px 18px; border: 0; border-radius: 8px;
+    background: var(--accent); color: var(--accent-text); cursor: pointer; }
+  button:disabled { opacity: .5; cursor: default; }
+  .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 16px; }
+  progress { flex: 1; min-width: 160px; height: 10px; accent-color: var(--accent); }
+  #log { margin: 0; background: var(--log); color: var(--log-text); border-radius: 8px; padding: 12px;
+    min-height: 140px; max-height: 320px; overflow: auto; font: 13px/1.5 ui-monospace, Menlo, monospace;
+    white-space: pre-wrap; }
+  .ok { color: var(--ok); } .err { color: var(--err); }
+  .warn { border-color: var(--err); color: var(--err); }
+  small { color: var(--muted); }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>8051 Yükleyici</h1>
+    <p class="sub">STC12C5A60S2 ve Nuvoton MS51 kartlarına USB üzerinden program yükler (Web Serial, Chrome / Edge).</p>
+  </header>
+
+  <section id="unsupported" class="warn" hidden>
+    Bu tarayıcı Web Serial desteklemiyor. Masaüstü Chrome veya Edge kullanın; sayfa
+    <code>https://</code> ya da <code>http://localhost</code> üzerinden açılmalı.
+  </section>
+
+  <section>
+    <div id="drop" class="drop" tabindex="0">
+      <strong>HEX veya BIN dosyası seçin</strong>
+      <small>ya da buraya sürükleyin (.hex, .ihx, .bin)</small>
+      <div id="file" class="file">Dosya seçilmedi</div>
+    </div>
+    <input id="input" type="file" accept=".hex,.ihx,.ihex,.bin" hidden>
+
+    <div class="grid">
+      <label>Kart
+        <select id="chip">
+          <option value="stc12" selected>STC12C5A60S2</option>
+          <option value="ms51">Nuvoton MS51</option>
+        </select>
+      </label>
+      <label class="stc">El sıkışma hızı
+        <select id="handshake">
+          <option value="2400">2400</option>
+          <option value="4800">4800</option>
+          <option value="9600" selected>9600</option>
+        </select>
+      </label>
+      <label class="stc">Aktarım hızı
+        <select id="transfer">
+          <option value="same" selected>El sıkışmayla aynı</option>
+          <option value="19200">19200 (deneysel)</option>
+          <option value="38400">38400 (deneysel)</option>
+          <option value="57600">57600 (deneysel)</option>
+        </select>
+      </label>
+      <label class="check"><input id="auto" type="checkbox" checked> <span id="autoText">Otomatik ISP (DTR/RTS ile güç kes-aç)</span></label>
+    </div>
+
+    <div class="row">
+      <button id="go" disabled>Port seç ve yükle</button>
+      <progress id="bar" max="1" value="0"></progress>
+    </div>
+    <p class="stc"><small>Otomatik ISP çalışmazsa: "Yükle"ye bastıktan sonra kart üzerindeki SW1 (ISP)
+      düğmesine basıp bırakın. Farklı aktarım hızı seçmek portu yeniden açtırır; sorun olursa
+      "El sıkışmayla aynı" seçeneğine dönün.</small></p>
+    <p class="ms51" hidden><small>MS51 kartında bootloader her çipe bir kez ICP (Nu-Link) ile yüklenir.
+      Otomatik reset çalışmazsa "Yükle"ye bastıktan sonra karttaki RESET düğmesine basıp bırakın.
+      Program en fazla 30 KB olabilir.</small></p>
+  </section>
+
+  <pre id="log" aria-live="polite"></pre>
+</main>
+
+<script type="module">
+import { WebSerialTransport, programStc12, parseIntelHex } from './stc12.js';
+import { programMs51 } from './nuvoton.js';
+
+const $ = (id) => document.getElementById(id);
+const logEl = $('log');
+let code = null;
+
+function log(msg, cls) {
+  const line = document.createElement('div');
+  line.textContent = `${new Date().toLocaleTimeString()}  ${msg}`;
+  if (cls) line.className = cls;
+  logEl.append(line);
+  logEl.scrollTop = logEl.scrollHeight;
+}
+
+if (!('serial' in navigator)) $('unsupported').hidden = false;
+
+function chipChanged() {
+  const ms51 = $('chip').value === 'ms51';
+  document.querySelectorAll('.stc').forEach((e) => { e.hidden = ms51; });
+  document.querySelectorAll('.ms51').forEach((e) => { e.hidden = !ms51; });
+  $('autoText').textContent = ms51 ? 'Otomatik reset (DTR)' : 'Otomatik ISP (DTR/RTS ile güç kes-aç)';
+}
+$('chip').onchange = chipChanged;
+chipChanged();
+
+async function loadFile(file) {
+  try {
+    const name = file.name.toLowerCase();
+    code = /\.(hex|ihx|ihex)$/.test(name)
+      ? parseIntelHex(await file.text())
+      : new Uint8Array(await file.arrayBuffer());
+    $('file').textContent = `${file.name}: ${code.length} bayt`;
+    $('go').disabled = !('serial' in navigator);
+  } catch (e) {
+    code = null;
+    $('file').textContent = file.name;
+    $('go').disabled = true;
+    log(e.message, 'err');
+  }
+}
+
+const drop = $('drop');
+drop.onclick = () => $('input').click();
+drop.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') $('input').click(); };
+$('input').onchange = (e) => e.target.files[0] && loadFile(e.target.files[0]);
+drop.ondragover = (e) => { e.preventDefault(); drop.classList.add('over'); };
+drop.ondragleave = () => drop.classList.remove('over');
+drop.ondrop = (e) => {
+  e.preventDefault();
+  drop.classList.remove('over');
+  if (e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0]);
+};
+
+$('go').onclick = async () => {
+  let port;
+  try {
+    port = await navigator.serial.requestPort(); // kart listede "USB Serial" / CH340 olarak görünür
+  } catch {
+    return; // kullanıcı vazgeçti
+  }
+  const handshakeBaud = Number($('handshake').value);
+  const t = $('transfer').value;
+  $('go').disabled = true;
+  $('bar').value = 0;
+  try {
+    const progress = (done, total) => { $('bar').value = done / total; };
+    if ($('chip').value === 'ms51') {
+      await programMs51(new WebSerialTransport(port, { parity: 'none' }), code, {
+        autoReset: $('auto').checked, log, progress,
+      });
+      log('Yükleme tamamlandı (MS51).', 'ok');
+    } else {
+      const r = await programStc12(new WebSerialTransport(port), code, {
+        handshakeBaud,
+        transferBaud: t === 'same' ? handshakeBaud : Number(t),
+        autoReset: $('auto').checked,
+        log,
+        progress,
+      });
+      log(`Yükleme tamamlandı (${r.model}).`, 'ok');
+    }
+  } catch (e) {
+    log(`Hata: ${e.message}`, 'err');
+  } finally {
+    $('go').disabled = !code;
+  }
+};
+</script>
+</body>
+</html>
