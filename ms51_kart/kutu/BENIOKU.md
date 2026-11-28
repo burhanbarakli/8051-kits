@@ -13,7 +13,7 @@ STC12 kutusunun (`../../donanim/kutu`) uyarlamasıdır. Yapısı, montajı ve to
 | Ne | Nasıl |
 |---|---|
 | Port header'ları: P0, P1, P2, P3 | Kapakta her header'ın üstünde bir yarık var. Dupont kablo uçları yarıktan geçip pinlere takılıyor. Port adları ve 1. pin noktası oyma olarak yazılı. |
-| ICP header'ı (J6) | Bu da yarık. Nu-Link kablosu kutu açılmadan takılabiliyor. Pin sırası kapakta yazılı: 5V DAT CLK RST GND. |
+| ICP header'ı (J6) | Bu da yarık; Rev C'de MCU'nun altında, kapağın ortasında. Nu-Link kablosu kutu açılmadan takılabiliyor. Pin sırası kapakta yazılı: 5V DAT CLK RST GND. |
 | RESET, USER butonları | Kapaktaki deliklerden çıkan basma pimleriyle (kırmızı) basılıyor. Her pimin altında kılavuz tüpü var, yakası pimin dışarı düşmesini engelliyor. |
 | PWR, L LED'leri | Kapakta delik var, içine şeffaf ışık boruları takılıyor. |
 | USB-C | Sol yan duvarda 13 x 7.4 mm açıklık var. Kablo ucunun kalıbı içeri girebiliyor. |

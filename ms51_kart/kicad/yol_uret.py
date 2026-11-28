@@ -47,7 +47,7 @@ def kurallar(board):
 
 
 def kenar_via_yasagi(board, genislik=0.8):
-    """Kart kenarı boyunca via yasak şeritleri: Freerouting kenar payını (0.5 mm) bilmiyor.
+    """Kart kenarı boyunca via ve yol yasak şeritleri: Freerouting kenar payını (0.5 mm) bilmiyor.
     Yalnızca yönlendirme için; 'ses' adımında temizle() ile silinir."""
     k = board.GetBoardEdgesBoundingBox()
     x0, y0, x1, y1 = k.GetX(), k.GetY(), k.GetRight(), k.GetBottom()
@@ -56,7 +56,7 @@ def kenar_via_yasagi(board, genislik=0.8):
         z = pcbnew.ZONE(board)
         z.SetIsRuleArea(True)
         z.SetDoNotAllowVias(True)
-        z.SetDoNotAllowTracks(False)
+        z.SetDoNotAllowTracks(True)
         z.SetDoNotAllowPads(False)
         z.SetDoNotAllowFootprints(False)
         z.SetLayerSet(pcbnew.LSET.AllCuMask())
@@ -73,6 +73,33 @@ def temizle(board):
         board.Delete(z)
     for t in list(board.GetTracks()):
         board.Delete(t)
+
+
+def usb_kopruleri(board):
+    """USB-C'de iki yüzün D+/D- pad'lerini (A6-B6, A7-B7) birleştiren kısa köprüler (F.Cu).
+    Freerouting 0,5 mm aralıklı pad'ler arasında bunu her zaman bulamıyor (KiCad 10 kütüphanesiyle
+    A6 açıkta kaldı); köprüler DSN'den önce çizilir ve Freerouting onlara bağlanır.
+    D+ sağdan (soketin içine doğru), D- soldan dolaşır. Aynı yol zaten varsa tekrar çizmez."""
+    fp = board.FindFootprintByReference('J1')
+    pad = {p.GetNumber(): p.GetPosition() for p in fp.Pads()}
+    var = {(t.GetStart().x, t.GetStart().y, t.GetEnd().x, t.GetEnd().y) for t in board.GetTracks()}
+    adet = 0
+    for a, b, dx in (('A6', 'B6', 1.052), ('B7', 'A7', -1.052)):
+        pa, pb = pad[a], pad[b]
+        ka = pcbnew.VECTOR2I(pa.x + mm(dx), pa.y)
+        kb = pcbnew.VECTOR2I(pb.x + mm(dx), pb.y)
+        for s0, s1 in ((pa, ka), (ka, kb), (kb, pb)):
+            if (s0.x, s0.y, s1.x, s1.y) in var:
+                continue
+            t = pcbnew.PCB_TRACK(board)
+            t.SetStart(s0)
+            t.SetEnd(s1)
+            t.SetWidth(mm(0.25))
+            t.SetLayer(pcbnew.F_Cu)
+            t.SetNet(fp.FindPadByNumber(a).GetNet())
+            board.Add(t)
+            adet += 1
+    return adet
 
 
 def gnd_dokumu(board):
@@ -166,6 +193,7 @@ board = pcbnew.LoadBoard(PCB)
 if adim == 'dsn':
     temizle(board)
     kurallar(board)
+    usb_kopruleri(board)
     pcbnew.SaveBoard(PCB, board)
     kenar_via_yasagi(board)   # yalnızca DSN'e girer, kart dosyasına kaydedilmez
     if not pcbnew.ExportSpecctraDSN(board, f'{PROJECT}.dsn'):
@@ -175,6 +203,7 @@ elif adim == 'ses':
     temizle(board)
     if not pcbnew.ImportSpecctraSES(board, f'{PROJECT}.ses'):
         raise SystemExit('SES içe alınamadı')
+    usb_kopruleri(board)   # SES'te zaten varsa eklenmez
     yollar = [t for t in board.GetTracks() if t.Type() == pcbnew.PCB_TRACE_T]
     vialar = [t for t in board.GetTracks() if t.Type() == pcbnew.PCB_VIA_T]
     dikis = gnd_dokumu(board)

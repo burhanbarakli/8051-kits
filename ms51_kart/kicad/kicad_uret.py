@@ -140,7 +140,7 @@ def instance(ref, lib_id, value, footprint, lcsc, x, y, sym, root):
             ['on_board', (child(sym, 'on_board') or [0, 'yes'])[1]], ['dnp', 'yes' if ref in TAKILMAZ else 'no'],
             ['uuid', uid('sym', ref)]]
     fields = [('Reference', ref), ('Value', value), ('Footprint', footprint),
-              ('Datasheet', props.get('Datasheet', [0, Q('~')])[1]), ('LCSC', lcsc)]
+              ('Datasheet', props.get('Datasheet', [0, 0, Q('~')])[2]), ('LCSC', lcsc)]
     for k, (fname, fval) in enumerate(fields):
         lp = props.get(fname)
         at = child(lp, 'at') if lp else None
@@ -199,7 +199,7 @@ def build(libdir):
 
     sch = ['kicad_sch', ['version', 20250114], ['generator', Q('eeschema')], ['generator_version', Q('9.0')],
            ['uuid', root], ['paper', Q('A3')],
-           ['title_block', ['title', Q('MS51 Geliştirme Kartı')], ['rev', Q('A')],
+           ['title_block', ['title', Q('MS51 Geliştirme Kartı')], ['rev', Q('C')],
             ['comment', 1, Q('MS51PC0AE: ICP ile bir kez bootloader, sonra USB ile yükleme')]],
            ['lib_symbols', *lib_syms.values()],
            *items,

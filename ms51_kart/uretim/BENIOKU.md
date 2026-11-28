@@ -1,11 +1,11 @@
-# JLCPCB sipariş dosyaları: MS51 kartı (Rev B)
+# JLCPCB sipariş dosyaları: MS51 kartı (Rev C)
 
 Bu klasördeki dosyalar `../kicad/uretim.py` ile KiCad PCB dosyasından üretilir. Elle düzenlemeyin.
 
 | Dosya | Ne için |
 |---|---|
 | `ms51_kart-gerber.zip` | PCB siparişi: Gerber ve delik dosyaları |
-| `jlcpcb-bom.csv` | Dizgi (SMT montaj) için BOM: 14 satır, 25 SMD parça, LCSC kodlarıyla |
+| `jlcpcb-bom.csv` | Dizgi (SMT montaj) için BOM: 19 satır, 33 SMD parça, LCSC kodlarıyla |
 | `jlcpcb-cpl.csv` | Dizgi için parça konumları ve açıları |
 | `delikli-parcalar.csv` | Elle lehimlenecek parçalar: yalnızca pin header'lar |
 | `takilmaz.csv` | Varsayılan montajda boş kalanlar: Y1, C8, C9. Yalnızca U2 yerine CH340G takılırsa elle lehimlenir |
@@ -28,7 +28,8 @@ MCU, 0.8 mm adımlı LQFP-32 kılıfında. Havyayla lehimlenebilir ama ilk kez y
    - **U3 (SOT-23-6)**
    - **LED'lerin kutbu**
    - **J1 (USB-C)**
-3. **Stok:** 17 Kasım'da 100 nF (C14663), 1k (C21190) ve yeşil LED (C72043) LCSC'de stokta değildi. JLCPCB'nin önerdiği muadilleri seçebilirsiniz; aynı kılıfta herhangi bir 100 nF, 1k ve 0603 LED olur.
+   - **Y2 (24 MHz kristal, 3225):** 1. pad (XIN) MCU'ya bakan sol alt köşede olmalı
+3. **Stok:** 17 Kasım'da 100 nF (C14663), 1k (C21190) ve yeşil LED (C72043) LCSC'de stokta değildi. JLCPCB'nin önerdiği muadilleri seçebilirsiniz; aynı kılıfta herhangi bir 100 nF, 1k ve 0603 LED olur. Rev C'de eklenenlerin (Y2 C70590, 18 pF C1647, 100k C25803, 100 Ω C22775, 1 µF C15849) stoğu kontrol edilmedi. Kristal yerine 24 MHz, 12 pF yüklü başka bir 3225 kristal olabilir; yük kapasitesi farklıysa C10/C11 = 2 × (CL − 3 pF).
 4. **JLCPCB çipleri programlamaz.** Kart elinize bootloader'sız gelir. Her karta bir kez Nu-Link ile bootloader yüklenir; bkz. `../BENIOKU.md`.
 
 ## Elle lehimlenecekler

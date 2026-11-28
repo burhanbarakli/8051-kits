@@ -1,4 +1,4 @@
-"""MS51 geliştirme kartı (Rev B): parça ve bağlantı tanımı.
+"""MS51 geliştirme kartı (Rev C): parça ve bağlantı tanımı.
 
 Tek kaynak budur. ms51_sembol.py MCU sembolünü, kicad_uret.py şemayı, pcb_uret.py
 PCB'yi bu dosyadan üretir; ../BOM.csv ile aynı devreyi tarif eder.
@@ -7,7 +7,7 @@ Her parça: (ref, lib_id, değer, footprint, LCSC, {pin numarası: net}, (x, y) 
 Haritada olmayan pinler şemada "bağlantısız" (no-connect) işaretlenir.
 
 STC12 kartından farkları:
-  - MCU Nuvoton MS51PC0AE (1T 8051, 32K flash, 12 bit ADC, LQFP-32), dahili 16/24 MHz osilatör: kristal yok
+  - MCU Nuvoton MS51PC0AE (1T 8051, 32K flash, 12 bit ADC, LQFP-32)
   - Bootloader fabrikadan gelmez; ICP header'ından (J6) Nu-Link ile bir kez LDROM'a yüklenir.
     Sonra her reset'te bootloader çalıştığı için CH340'ın DTR'si ile reset atmak yeterli:
     STC'deki güç kesici (Q1-Q3, ISP butonu) yok
@@ -16,6 +16,17 @@ STC12 kartından farkları:
 Rev B: U2 yerine CH340C (kristalsiz, varsayılan) ya da CH340G takılabilir. İkisinin bacak
 dizilimi aynı; G'nin 7/8 (XI/XO) bacaklarına 12 MHz kristal gerekir. Y1, C8, C9 bunun için:
 CH340C ile boş bırakılır (TAKILMAZ), CH340G ile lehimlenir. CH340G Türkiye'de stokta bulunur.
+
+Rev C (bir meslektaşın incelemesinden sonra):
+  - MCU'ya 24 MHz kristal (Y2, XIN = P0.0 pin 23, XOUT = P0.1 pin 24) ve 18 pF yük
+    kondansatörleri (C10, C11). Kristal 12 pF yüklü: 2 x (12 - ~3 pF kaçak) = 18 pF.
+    Çip açılışta her zaman dahili HIRC ile başlar; HXT'ye yazılım geçer (CKEN/CKSWT).
+    P0.0/P0.1 artık header'a çıkmaz (J2'nin 1-2. pinleri boş).
+  - ICP: ICE_DAT ve ICE_CLK'a 100k pull-up (R9, R10) ve 100R seri direnç (R11, R12);
+    J6 MCU'nun yanına alındı.
+  - Reset: RST'ye 100 nF (C12). Önerilen 10 uF konmadı: DTR'den gelen otomatik reset
+    darbesini (C7 üzerinden) yutardı. C7 bu yüzden 100 nF'tan 1 uF'a çıktı; DTR inince
+    RST ~0,45 V'a iner, ~11 ms'de (10k x 1,1 uF) geri kalkar.
 """
 
 FP_R = 'Resistor_SMD:R_0603_1608Metric'
@@ -49,8 +60,8 @@ MS51_PINLER = {
     '10': ('P3.6/RXD1', 'L', 14, 'bidirectional'),
     '9': ('P3.7/TXD1', 'L', 15, 'bidirectional'),
     '4': ('VSS', 'L', 16, 'power_in'),
-    '23': ('P0.0/PWM0_3', 'R', 0, 'bidirectional'),
-    '24': ('P0.1/PWM0_4', 'R', 1, 'bidirectional'),
+    '23': ('P0.0/XIN', 'R', 0, 'bidirectional'),
+    '24': ('P0.1/XOUT', 'R', 1, 'bidirectional'),
     '26': ('P0.2/ICE_CLK', 'R', 2, 'bidirectional'),
     '27': ('P0.3/ADC6', 'R', 3, 'bidirectional'),
     '28': ('P0.4/ADC5', 'R', 4, 'bidirectional'),
@@ -70,7 +81,7 @@ MS51_PINLER = {
 # Pin -> net: adı '/' öncesindeki port adı; özel görevli pinler ayrıca
 MCU_PINS = {num: ad.split('/')[0] for num, (ad, *_rest) in MS51_PINLER.items()}
 MCU_PINS.update({'6': '+5V', '4': 'GND', '1': 'RST', '30': 'MCU_TXD', '31': 'MCU_RXD',
-                 '5': 'ICE_DAT', '26': 'ICE_CLK'})
+                 '5': 'ICE_DAT', '26': 'ICE_CLK', '23': 'XIN', '24': 'XOUT'})
 
 
 def header(port, n=8):
@@ -81,14 +92,15 @@ def header(port, n=8):
 
 P0_PINS = header('P0')
 P0_PINS.update({'3': 'ICE_CLK', '7': 'MCU_TXD', '8': 'MCU_RXD'})   # ICP ve UART ile ortak
+del P0_PINS['1'], P0_PINS['2']                                       # P0.0/P0.1: kristal (Y2)
 P1_PINS = header('P1')
 P1_PINS.update({'7': 'ICE_DAT'})
 P3_PINS = header('P3')
 P2_PINS = {'1': 'RST', **{str(k + 1): f'P2.{k}' for k in range(1, 6)}, '7': '+5V', '8': 'GND'}
 
-# USB-C 16P: GND A1/A12/B1/B12, VBUS A4/A9/B4/B9, CC A5/B5, D+ A6/B6, D- A7/B7, SBU A8/B8, kalkan S1
+# USB-C 16P: GND A1/A12/B1/B12, VBUS A4/A9/B4/B9, CC A5/B5, D+ A6/B6, D- A7/B7, SBU A8/B8, kalkan SH (KiCad 9'da S1)
 USBC_PINS = {
-    'A1': 'GND', 'A12': 'GND', 'B1': 'GND', 'B12': 'GND', 'S1': 'GND',
+    'A1': 'GND', 'A12': 'GND', 'B1': 'GND', 'B12': 'GND', 'SH': 'GND',
     'A4': 'VBUS', 'A9': 'VBUS', 'B4': 'VBUS', 'B9': 'VBUS',
     'A5': 'CC1', 'B5': 'CC2',
     'A6': 'USB_DP', 'B6': 'USB_DP', 'A7': 'USB_DM', 'B7': 'USB_DM',
@@ -124,22 +136,32 @@ PARTS = [
     ('R4', 'Device:R', '1k', FP_R, 'C21190', two('CH_TXD', 'MCU_RXD'), (210.82, 45.72)),
     ('R5', 'Device:R', '1k', FP_R, 'C21190', two('MCU_TXD', 'CH_RXD'), (226.06, 45.72)),
 
-    # --- 3. Reset: 10k pull-up, DTR -> 100nF -> 1k (otomatik reset), RESET butonu, tepe kırpma diyodu
+    # --- 3. Reset: 10k pull-up, 100nF RST-GND (C12), DTR -> 1uF -> 1k (otomatik reset), RESET butonu, tepe kırpma diyodu
     ('R6', 'Device:R', '10k', FP_R, 'C25804', two('+5V', 'RST'), (256.54, 45.72)),
-    ('C7', 'Device:C', '100nF', FP_C, 'C14663', two('DTR_N', 'RST_C'), (256.54, 71.12)),
+    ('C7', 'Device:C', '1uF', FP_C, 'C15849', two('DTR_N', 'RST_C'), (256.54, 71.12)),
     ('R7', 'Device:R', '1k', FP_R, 'C21190', two('RST_C', 'RST'), (271.78, 71.12)),
     ('D1', 'Device:D_Schottky', 'B5819W', 'Diode_SMD:D_SOD-123', 'C8598', {'1': '+5V', '2': 'RST'}, (271.78, 45.72)),
     ('SW1', 'Switch:SW_Push', 'RESET', FP_SW, 'C318884', two('RST', 'GND'), (294.64, 58.42)),
+    ('C12', 'Device:C', '100nF', FP_C, 'C14663', two('RST', 'GND'), (284.48, 86.36)),
 
-    # --- 4. ICP (Nu-Link): VDD, DAT, CLK, RST, GND
+    # --- 4. ICP (Nu-Link): VDD, DAT, CLK, RST, GND. MCU tarafında pull-up, header tarafında seri direnç
     ('J6', 'Connector_Generic:Conn_01x05', 'ICP', FP_HDR.format(5), 'C2337',
-     {'1': '+5V', '2': 'ICE_DAT', '3': 'ICE_CLK', '4': 'RST', '5': 'GND'}, (337.82, 58.42)),
+     {'1': '+5V', '2': 'ICP_DAT', '3': 'ICP_CLK', '4': 'RST', '5': 'GND'}, (337.82, 58.42)),
+    ('R9', 'Device:R', '100k', FP_R, 'C25803', two('+5V', 'ICE_DAT'), (360.68, 45.72)),
+    ('R10', 'Device:R', '100k', FP_R, 'C25803', two('+5V', 'ICE_CLK'), (370.84, 45.72)),
+    ('R11', 'Device:R', '100', FP_R, 'C22775', two('ICE_DAT', 'ICP_DAT'), (360.68, 71.12)),
+    ('R12', 'Device:R', '100', FP_R, 'C22775', two('ICE_CLK', 'ICP_CLK'), (370.84, 71.12)),
 
     # --- 5. MCU ve çevresi
     ('U1', 'MS51:MS51PC0AE', 'MS51PC0AE', 'Package_QFP:LQFP-32_7x7mm_P0.8mm', 'C2688383',
      MCU_PINS, (76.2, 185.42)),
     ('C5', 'Device:C', '100nF', FP_C, 'C14663', two('+5V', 'GND'), (127.0, 149.86)),
     ('C6', 'Device:C', '10uF', FP_C0805, 'C15850', two('+5V', 'GND'), (137.16, 149.86)),
+    # 24 MHz kristal, 12 pF yük (YXC X322524MOB4SI); 1-3 kristal, 2-4 kılıf (GND)
+    ('Y2', 'Device:Crystal_GND24', '24MHz', 'Crystal:Crystal_SMD_3225-4Pin_3.2x2.5mm', 'C70590',
+     {'1': 'XIN', '3': 'XOUT', '2': 'GND', '4': 'GND'}, (127.0, 175.26)),
+    ('C10', 'Device:C', '18pF', FP_C, 'C1647', two('XIN', 'GND'), (116.84, 187.96)),
+    ('C11', 'Device:C', '18pF', FP_C, 'C1647', two('XOUT', 'GND'), (137.16, 187.96)),
     ('R8', 'Device:R', '1k', FP_R, 'C21190', two('+5V', 'LED2_A'), (157.48, 149.86)),
     ('LED2', 'Device:LED', 'L kırmızı', FP_LED, 'C2286', {'1': 'P1.2', '2': 'LED2_A'}, (157.48, 165.1)),
     ('SW2', 'Switch:SW_Push', 'USER', FP_SW, 'C318884', two('P3.0', 'GND'), (177.8, 149.86)),
@@ -161,6 +183,6 @@ NOTES = [
     ((134.62, 25.4), '2. USB-UART (CH340C; ya da CH340G + Y1, C8, C9), UART seri dirençleri'),
     ((172.72, 88.9), 'Y1, C8, C9: yalnızca CH340G takılırsa'),
     ((241.3, 30.48), '3. Reset (DTR ile otomatik)'),
-    ((322.58, 30.48), '4. ICP (Nu-Link)'),
-    ((25.4, 116.84), '5. MS51PC0AE (dahili osilatör), kullanıcı LED (P1.2/PWM) ve buton (P3.0/INT0), header\'lar'),
+    ((322.58, 30.48), '4. ICP (Nu-Link): 100k pull-up, 100R seri'),
+    ((25.4, 116.84), '5. MS51PC0AE, 24 MHz kristal (Y2), kullanıcı LED (P1.2/PWM) ve buton (P3.0/INT0), header\'lar'),
 ]

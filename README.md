@@ -5,7 +5,7 @@ USB üzerinden, tarayıcıdaki bir web arayüzüyle programlanan iki 8051 geliş
 | Klasör | İçerik |
 |---|---|
 | [`donanim/`](donanim/) | **STC12C5A60S2 kartı.** Bootloader çipin içinde fabrikadan gelir. Şema, KiCad projesi, JLCPCB üretim dosyaları, malzeme listesi, tedarik notları ([`tedarik.md`](donanim/tedarik.md)), 3D baskı kutusu ve 8051 MCU karşılaştırması ([`mcu-karsilastirma.md`](donanim/mcu-karsilastirma.md)) |
-| [`ms51_kart/`](ms51_kart/) | **Nuvoton MS51PC0AE kartı (Rev B).** KiCad projesi, üretim dosyaları, LDROM bootloader'ı (`bootloader/`), 3D baskı kutusu ve alışveriş takip sayfası. Bkz. [`ms51_kart/BENIOKU.md`](ms51_kart/BENIOKU.md) |
+| [`ms51_kart/`](ms51_kart/) | **Nuvoton MS51PC0AE kartı (Rev C).** KiCad projesi, üretim dosyaları, LDROM bootloader'ı (`bootloader/`), 3D baskı kutusu ve alışveriş takip sayfası. Bkz. [`ms51_kart/BENIOKU.md`](ms51_kart/BENIOKU.md) |
 | [`yukleyici/`](yukleyici/) | **Web Serial yükleyici** (Chrome/Edge). STC12 ve MS51 için, testleriyle. Bkz. [`yukleyici/BENIOKU.md`](yukleyici/BENIOKU.md) |
 
 ## Durum

@@ -114,7 +114,7 @@ footer { font-size: 13px; color: var(--muted); display: grid; gap: 4px; }
 
 <div class="wrap">
   <header>
-    <div class="eyebrow">MS51 geliştirme kartı · Rev B</div>
+    <div class="eyebrow">MS51 geliştirme kartı · Rev C</div>
     <h1>Alınacaklar ve gelenler</h1>
     <p class="lead">Kart, programlayıcı ve kutu için gereken her şey. Sipariş verdiğinde "Sipariş", elinize ulaştığında "Geldi" seçin. Durum kaydedilir, sayfayı her açışınızda kaldığınız yerden görürsünüz.</p>
   </header>
@@ -128,7 +128,7 @@ footer { font-size: 13px; color: var(--muted); display: grid; gap: 4px; }
     </div>
     <div class="bar" role="img" id="bar" aria-label="İlerleme"><i class="b-ok" id="bar-ok"></i><i class="b-order" id="bar-order"></i></div>
     <div class="meta">
-      <span>Elektronik parçalar tek LCSC sepetinde ≈ <strong id="lcsc-sepet">–</strong></span>
+      <span>Elektronik parçalar tek LCSC sepetinde ≈ <strong id="lcsc-sepet">–</strong> (Rev C'de eklenen 5 kalem hariç)</span>
       <span>Kart başına malzeme ≈ <strong id="lcsc-kart">–</strong></span>
       <span>LCSC fiyatları 17 Kasım 2026, TL fiyatları 15–17 Kasım 2026</span>
     </div>
@@ -154,12 +154,14 @@ footer { font-size: 13px; color: var(--muted); display: grid; gap: 4px; }
 const LCSC = (c) => `https://www.lcsc.com/product-detail/${c}.html`;
 const lc = (c, unit, min) => ({ shop: 'LCSC', url: LCSC(c), price: `${c} · ${unit.toFixed(unit < 0.1 ? 4 : 2)} $${min > 1 ? ` · min ${min}` : ''}`, abroad: true, unit, min });
 const tr = (shop, url, price) => ({ shop, url, price, tr: true });
+// Rev C'de eklenen parçalar: LCSC fiyatı okunamadı, toplama girmez
+const lcx = (c) => ({ shop: 'LCSC', url: LCSC(c), price: `${c} · fiyat bakılmadı`, abroad: true });
 
 const GRUPLAR = [
   { id: 'kart', ad: 'Kart üretimi',
     not: 'Gerber dosyası ms51_kart/uretim/ms51_kart-gerber.zip. JLCPCB dizgisini (SMT montaj) seçerseniz "SMD" etiketli parçalar karta lehimli gelir; bu durumda onları ayrıca almanız gerekmez, gelen kartla birlikte "Geldi" işaretleyin.' },
   { id: 'parca', ad: 'Elektronik parçalar',
-    not: 'En kolayı hepsini tek LCSC siparişiyle almak. CH340C Türkiye\'de yok; Rev B kartta yerine Özdisan\'da stokta olan CH340G takılabilir, o zaman kristal ve iki 22 pF kondansatör de alınır (opsiyonel satırlar). HRO USB-C soket de Türkiye\'de yok (yerlilerin lehim ayağı farklı).' },
+    not: 'En kolayı hepsini tek LCSC siparişiyle almak. CH340C Türkiye\'de yok; kartta yerine Özdisan\'da stokta olan CH340G takılabilir, o zaman kristal ve iki 22 pF kondansatör de alınır (opsiyonel satırlar). HRO USB-C soket de Türkiye\'de yok (yerlilerin lehim ayağı farklı). Rev C\'de MCU kristali (24 MHz), 18 pF, 100k, 100 Ω ve 1 µF eklendi; bunların LCSC fiyatı henüz yazılmadı.' },
   { id: 'prog', ad: 'Programlama',
     not: 'MS51 fabrikadan bootloader\'sız gelir. Nu-Link ile her çipe bir kez bootloader yüklenir; sonrası USB üzerinden. Bir laboratuvara bir Nu-Link yeter.' },
   { id: 'kutu', ad: 'Kutu',
@@ -188,7 +190,13 @@ const KALEMLER = [
     src: [lc('C70075', 0.0414, 20), tr('direnc.net', 'https://www.direnc.net/500ma-24v-smt-ptc-sigorta-1206', '7.17 TL'), tr('Özdisan', 'https://www.ozdisan.com/en/p/ptc-resettable-fuses-845/fuzetec-fsmd050-24-1206r-537038', '5.36 TL')] },
   { id: 'd1', g: 'parca', refs: ['D1'], ad: 'B5819W Schottky diyot', adet: '1', smd: true, aciklama: 'SOD-123. Otomatik reset darbesinde RST\'yi kırpar.',
     src: [lc('C8598', 0.0258, 20), tr('motorobit', 'https://www.motorobit.com/b5819w-1a-40v-smd-schottky-diyot', '1.03 TL + KDV'), tr('direnc.net', 'https://www.direnc.net/b5819w-1a-40v-silicon-signal-diode', '2.42 TL')] },
-  { id: 'c100n', g: 'parca', refs: ['C2', 'C3', 'C4', 'C5', 'C7'], ad: '100 nF kondansatör', adet: '5', smd: true, aciklama: '0603, X7R.',
+  { id: 'y2', g: 'parca', refs: ['Y2'], ad: '24 MHz kristal, SMD 3225', adet: '1', smd: true, aciklama: 'MCU kristali (Rev C), 12 pF yüklü, 4 pad. Başka bir 24 MHz 3225 kristal de olur; yük kapasitesi farklıysa 18 pF kondansatörler 2 × (CL − 3 pF) olarak değişir.',
+    src: [lcx('C70590'), tr('direnc.net araması', 'https://www.direnc.net/arama?q=24+mhz+smd+kristal', ''), tr('Özdisan araması', 'https://www.ozdisan.com/c?search=24MHz%203225', '')] },
+  { id: 'c18p', g: 'parca', refs: ['C10', 'C11'], ad: '18 pF kondansatör', adet: '2', smd: true, aciklama: '0603, C0G. MCU kristalinin yük kondansatörleri (Rev C).',
+    src: [lcx('C1647'), tr('direnc.net araması', 'https://www.direnc.net/arama?q=18pf+0603', '')] },
+  { id: 'c1u', g: 'parca', refs: ['C7'], ad: '1 µF kondansatör', adet: '1', smd: true, aciklama: '0603. DTR otomatik reset kuplajı; Rev C\'de 100 nF\'tan 1 µF\'a çıktı.',
+    src: [lcx('C15849'), tr('direnc.net araması', 'https://www.direnc.net/arama?q=1uf+0603', '')] },
+  { id: 'c100n', g: 'parca', refs: ['C2', 'C3', 'C4', 'C5', 'C12'], ad: '100 nF kondansatör', adet: '5', smd: true, aciklama: '0603, X7R. Rev C\'de C7 yerine C12 (RST - GND).',
     src: [lc('C14663', 0.0058, 100), tr('direnc.net', 'https://www.direnc.net/100nf-50v-603-smd-kondansator', 'en az 10 · 0.26 TL/adet'), tr('Özdisan', 'https://www.ozdisan.com/en/p/smt-smd-and-mlcc-capacitors-184/yageo-cc0603krx7r9bb104-476015', 'BOM\'daki parça')] },
   { id: 'c10u', g: 'parca', refs: ['C1', 'C6'], ad: '10 µF kondansatör', adet: '2', smd: true, aciklama: '0805.',
     src: [lc('C15850', 0.0314, 20), tr('direnc.net', 'https://www.direnc.net/47uf-50v-10-x5r-805-smd-kondansator', '0.86 TL (sayfadaki ürün 10 µF)'), tr('Özdisan', 'https://www.ozdisan.com/en/p/smt-smd-and-mlcc-capacitors-184/samsung-cl21a106kaynnne-453566', 'BOM\'daki parça')] },
@@ -196,6 +204,10 @@ const KALEMLER = [
     src: [lc('C23186', 0.0016, 100), tr('Özdisan', 'https://www.ozdisan.com/en/p/smt-smd-and-chip-resistors-194/royalohm-0603saj0512t5e-346979', 'MOQ 200 · 10.82 TL')] },
   { id: 'r10k', g: 'parca', refs: ['R6'], ad: '10 kΩ direnç', adet: '1', smd: true, aciklama: '0603. RST pull-up.',
     src: [lc('C25804', 0.002, 100), tr('Özdisan', 'https://www.ozdisan.com/en/p/smt-smd-and-chip-resistors-194/royalohm-0603saf1002tde-516106', '100\'lük · 9.17 TL'), tr('direnc.net', 'https://www.direnc.net/10k-5-110w-s-603-smd-direnc-5000-adet', 'en az 100')] },
+  { id: 'r100k', g: 'parca', refs: ['R9', 'R10'], ad: '100 kΩ direnç', adet: '2', smd: true, aciklama: '0603. ICE_DAT / ICE_CLK pull-up (Rev C).',
+    src: [lcx('C25803'), tr('direnc.net araması', 'https://www.direnc.net/arama?q=100k+0603', '')] },
+  { id: 'r100', g: 'parca', refs: ['R11', 'R12'], ad: '100 Ω direnç', adet: '2', smd: true, aciklama: '0603. ICE_DAT / ICE_CLK seri direnç (Rev C).',
+    src: [lcx('C22775'), tr('direnc.net araması', 'https://www.direnc.net/arama?q=100+ohm+0603', '')] },
   { id: 'r1k', g: 'parca', refs: ['R3', 'R4', 'R5', 'R7', 'R8'], ad: '1 kΩ direnç', adet: '5', smd: true, aciklama: '0603. LED akımı, UART seri, reset seri. LCSC\'de 17 Kasım\'da stok yoktu; herhangi bir 0603 1k olur.',
     src: [lc('C21190', 0.0017, 100), tr('Özdisan', 'https://www.ozdisan.com/en/p/smt-smd-and-chip-resistors-194/royalohm-0603saf1001t5e-341789', '100\'lük paket')] },
   { id: 'led1', g: 'parca', refs: ['LED1'], ad: 'Yeşil LED (PWR)', adet: '1', smd: true, aciklama: '0603. LCSC\'de stok yoktu; herhangi bir 0603 yeşil LED olur.',
